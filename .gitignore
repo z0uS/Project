@@ -1,0 +1,25 @@
+# Dependency directories
+node_modules/
+clinic-fe/node_modules/
+clinic-be/node_modules/
+
+# Environment files (sensitive credentials)
+clinic-be/.env
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+clinic-fe/build/
+clinic-fe/dist/
+build/
+dist/
+
+# System / IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.zip
+*.lnk
