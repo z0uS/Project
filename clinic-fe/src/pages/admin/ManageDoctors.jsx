@@ -14,7 +14,11 @@ const defaultForm = {
   password: "",
   specialtyId: "",
   degree: "",
-  experience: ""
+  experience: "",
+  phone: "",
+  dob: "",
+  gender: "",
+  address: ""
 };
 
 const ManageDoctors = () => {
@@ -52,6 +56,10 @@ const ManageDoctors = () => {
       specialtyId: doc.specialtyId || "",
       degree: doc.degree || "",
       experience: doc.experience || "",
+      phone: doc.phone || "",
+      dob: doc.dob ? doc.dob.substring(0, 10) : "",
+      gender: doc.gender || "",
+      address: doc.address || "",
     });
     setEditId(doc.id);
     setShowModal(true);
@@ -112,8 +120,9 @@ const ManageDoctors = () => {
               <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Họ tên</th>
               <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Email</th>
               <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Chuyên khoa</th>
-              <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Bằng cấp</th>
-              <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Kinh nghiệm</th>
+              <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">SĐT</th>
+              <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Ngày sinh</th>
+              <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Địa chỉ</th>
               <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Trạng thái</th>
               <th className="py-3 px-4 border-b font-bold text-blue-700 bg-blue-100 uppercase text-xs">Hành động</th>
             </tr>
@@ -130,8 +139,9 @@ const ManageDoctors = () => {
                   <td className="py-3 px-4 font-semibold">{doc.fullName}</td>
                   <td className="py-3 px-4">{doc.email}</td>
                   <td className="py-3 px-4">{doc.specialtyName}</td>
-                  <td className="py-3 px-4">{doc.degree}</td>
-                  <td className="py-3 px-4">{doc.experience}</td>
+                  <td className="py-3 px-4">{doc.phone}</td>
+                  <td className="py-3 px-4">{doc.dob ? new Date(doc.dob).toLocaleDateString('vi-VN') : ""}</td>
+                  <td className="py-3 px-4">{doc.address}</td>
                   <td className="py-3 px-4">
                     <span
                       className={
@@ -220,14 +230,41 @@ const ManageDoctors = () => {
                 placeholder="Bằng cấp"
                 value={form.degree}
                 onChange={e => setForm(f => ({ ...f, degree: e.target.value }))}
-                required
               />
               <input
                 className="border w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-400 transition"
                 placeholder="Kinh nghiệm"
                 value={form.experience}
                 onChange={e => setForm(f => ({ ...f, experience: e.target.value }))}
-                required
+              />
+              <input
+                className="border w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-400 transition"
+                placeholder="Số điện thoại"
+                value={form.phone}
+                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              />
+              <input
+                type="date"
+                className="border w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-400 transition"
+                placeholder="Ngày sinh"
+                value={form.dob}
+                onChange={e => setForm(f => ({ ...f, dob: e.target.value }))}
+              />
+              <select
+                className="border w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-400 transition"
+                value={form.gender}
+                onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
+              >
+                <option value="">Chọn giới tính</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
+              <input
+                className="border w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-400 transition"
+                placeholder="Địa chỉ"
+                value={form.address}
+                onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
               />
               <div className="flex justify-end space-x-3 pt-2">
                 <button

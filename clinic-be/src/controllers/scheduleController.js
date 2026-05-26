@@ -1,4 +1,4 @@
-const { Schedule, Doctor, Shift } = require('../models');
+const { Schedule, Doctor, Shift, Appointment } = require('../models');
 
 // Lấy toàn bộ lịch làm việc
 exports.getAllSchedules = async (req, res) => {
@@ -66,12 +66,24 @@ exports.deleteSchedule = async (req, res) => {
     const { id } = req.params;
     const schedule = await Schedule.findByPk(id);
     if (!schedule) return res.status(404).json({ message: "Không tìm thấy lịch" });
+
+    // Kiểm tra xem có appointment nào đang liên kết đến lịch này không
+    const appointmentCount = await Appointment.count({
+      where: { scheduleId: id }
+    });
+    if (appointmentCount > 0) {
+      return res.status(409).json({
+        message: `Không thể xóa lịch này vì đã có ${appointmentCount} lịch hẹn liên quan. Hãy hủy các lịch hẹn trước khi xóa.`
+      });
+    }
+
     await schedule.destroy();
     res.json({ message: "Đã xóa lịch!" });
   } catch (err) {
     res.status(500).json({ message: "Lỗi xóa lịch", error: err.message });
   }
 };
+
 
 // Lấy lịch làm việc của 1 bác sĩ
 exports.getDoctorSchedules = async (req, res) => {

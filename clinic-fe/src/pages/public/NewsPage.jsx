@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const sampleArticles = [
   {
@@ -70,12 +71,12 @@ const NewsPage = () => {
                     )}
                   </div>
                   <p className="text-gray-700 flex-1 mb-4">{art.summary}</p>
-                  <a
-                    href={`/news/${art.id}`}
+                  <Link
+                    to={`/news/${art.id}`}
                     className="inline-block w-fit mt-auto px-6 py-2 rounded-xl bg-blue-600 text-white font-bold shadow hover:bg-blue-700 transition"
                   >
                     Xem chi tiết
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}

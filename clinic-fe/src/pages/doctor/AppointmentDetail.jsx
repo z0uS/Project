@@ -17,6 +17,7 @@ const AppointmentDetail = () => {
   const [diagnosis, setDiagnosis] = useState("");
   const [notes, setNotes] = useState("");
   const [message, setMessage] = useState("");
+  const [confirmMsg, setConfirmMsg] = useState("");
 
   // Lấy chi tiết lịch hẹn
   useEffect(() => {
@@ -47,6 +48,18 @@ const AppointmentDetail = () => {
     };
     if (id) fetchRecord();
   }, [id]);
+
+  const handleConfirm = async () => {
+    try {
+      await axios.patch(`/appointments/${id}/status`, { status: "confirmed" });
+      setAppointment((prev) => ({ ...prev, status: "confirmed" }));
+      setConfirmMsg("Xác nhận lịch hẹn thành công!");
+      setTimeout(() => setConfirmMsg(""), 3000);
+    } catch (err) {
+      setConfirmMsg(err?.response?.data?.message || "Lỗi khi xác nhận!");
+      setTimeout(() => setConfirmMsg(""), 3000);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,10 +97,34 @@ const AppointmentDetail = () => {
           ? `${appointment.shift.name} (${appointment.shift.startTime} - ${appointment.shift.endTime})`
           : "Không rõ"}
       </p>
-      <p>
-        <strong>Trạng thái:</strong>{" "}
-        {statusVN[appointment.status] || appointment.status}
-      </p>
+      <div className="flex items-center gap-3 mb-2">
+        <p className="m-0">
+          <strong>Trạng thái:</strong>{" "}
+          <span className={`px-2 py-1 rounded text-sm font-semibold ${
+            appointment.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+            appointment.status === "confirmed" ? "bg-blue-100 text-blue-700" :
+            appointment.status === "done" ? "bg-green-100 text-green-700" :
+            "bg-red-100 text-red-700"
+          }`}>
+            {statusVN[appointment.status] || appointment.status}
+          </span>
+        </p>
+        {appointment.status === "pending" && (
+          <button
+            onClick={handleConfirm}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded text-sm font-semibold shadow transition"
+          >
+            ✔ Xác nhận lịch hẹn
+          </button>
+        )}
+      </div>
+      {confirmMsg && (
+        <div className={`mb-3 px-4 py-2 rounded text-sm font-semibold ${
+          confirmMsg.includes("thành công") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+        }`}>
+          {confirmMsg}
+        </div>
+      )}
       <p>
         <strong>Ghi chú:</strong> {appointment.note || "Không có"}
       </p>

@@ -9,7 +9,11 @@ import RegisterPage from "../pages/RegisterPage";
 import AboutPage from "../pages/public/AboutPage";
 import ContactPage from "../pages/public/ContactPage";
 import NewsPage from "../pages/public/NewsPage";
+import NewsDetailPage from "../pages/public/NewsDetailPage";
 import GuidePage from "../pages/public/GuidePage";
+import DoctorsPage from "../pages/public/DoctorsPage";
+import SpecialtiesPage from "../pages/public/SpecialtiesPage";
+import ServicesPage from "../pages/public/ServicesPage";
 
 // Layouts
 import MainLayout from "../layouts/MainLayout";
@@ -64,7 +68,11 @@ const AppRoutes = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/news" element={<NewsPage />} />
+        <Route path="/news/:id" element={<NewsDetailPage />} />
         <Route path="/guide" element={<GuidePage />} />
+        <Route path="/doctors" element={<DoctorsPage />} />
+        <Route path="/specialties" element={<SpecialtiesPage />} />
+        <Route path="/services" element={<ServicesPage />} />
       </Route>
 
       {/* Patient routes */}

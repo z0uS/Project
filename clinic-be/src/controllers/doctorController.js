@@ -26,7 +26,10 @@ exports.getProfile = async (req, res) => {
       email: user.email,
       specialtyId: doctor.specialtyId,
       specialtyName: doctor.specialty ? doctor.specialty.name : null,
-      specialtyDescription: doctor.specialty ? doctor.specialty.description : null
+      specialtyDescription: doctor.specialty ? doctor.specialty.description : null,
+      dob: doctor.dob,
+      gender: doctor.gender,
+      address: doctor.address,
     });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi lấy profile doctor', error: err.message });
@@ -39,7 +42,7 @@ exports.updateProfile = async (req, res) => {
     const doctor = await Doctor.findOne({ where: { userId } });
     if (!doctor) return res.status(404).json({ message: 'Không tìm thấy thông tin bác sĩ' });
 
-    const { fullName, phone, degree, experience, bio, specialtyId } = req.body;
+    const { fullName, phone, degree, experience, bio, specialtyId, dob, gender, address } = req.body;
 
     // Chỉ cập nhật khi có dữ liệu hợp lệ (tránh overwrite bằng chuỗi rỗng)
     if (typeof fullName === "string" && fullName.trim() !== "") doctor.fullName = fullName.trim();
@@ -48,6 +51,9 @@ exports.updateProfile = async (req, res) => {
     if (typeof experience === "string" && experience.trim() !== "") doctor.experience = experience.trim();
     if (typeof bio === "string" && bio.trim() !== "") doctor.bio = bio.trim();
     if (specialtyId) doctor.specialtyId = specialtyId;
+    if (dob !== undefined) doctor.dob = dob || null;
+    if (typeof gender === "string") doctor.gender = gender;
+    if (typeof address === "string") doctor.address = address;
 
     await doctor.save();
 

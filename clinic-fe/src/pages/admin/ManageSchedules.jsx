@@ -17,6 +17,8 @@ const ManageSchedules = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success"); // "success" | "error"
+
 
   const location = useLocation();
 
@@ -75,22 +77,33 @@ const ManageSchedules = () => {
       if (editingId) {
         await axios.put(`/schedules/${editingId}`, form);
         setMessage("Sửa lịch thành công");
+        setMessageType("success");
       } else {
         await axios.post("/schedules", form);
         setMessage("Thêm lịch thành công");
+        setMessageType("success");
       }
       setShowModal(false);
       fetchSchedules();
     } catch (err) {
       setMessage(err.response?.data?.message || "Có lỗi xảy ra");
+      setMessageType("error");
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Xác nhận xóa lịch?")) return;
-    await axios.delete(`/schedules/${id}`);
-    fetchSchedules();
+    try {
+      await axios.delete(`/schedules/${id}`);
+      setMessage("Đã xóa lịch thành công!");
+      setMessageType("success");
+      fetchSchedules();
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Không thể xóa lịch. Vui lòng thử lại.");
+      setMessageType("error");
+    }
   };
+
 
   return (
     <div className="max-w-5xl mx-auto py-10">
@@ -101,7 +114,11 @@ const ManageSchedules = () => {
       >
         Thêm lịch mới
       </button>
-      {message && <div className="mb-4 text-green-600">{message}</div>}
+      {message && (
+        <div className={`mb-4 px-4 py-2 rounded font-medium ${messageType === "error" ? "bg-red-50 text-red-700 border border-red-200" : "bg-green-50 text-green-700 border border-green-200"}`}>
+          {message}
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-xl shadow mb-8">
         <table className="min-w-full bg-white rounded-xl">

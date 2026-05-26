@@ -60,15 +60,7 @@ const MENU_ITEMS = [
     ],
   },
   { label: "Tin tức & Kiến thức", to: "/news" },
-  {
-    label: "Hướng dẫn",
-    to: "/guide",
-    items: [
-      { label: "Hướng dẫn đặt lịch", to: "/guide" },
-      { label: "Hướng dẫn thanh toán", to: "/guide" },
-      { label: "Hướng dẫn tạo tài khoản", to: "/guide" },
-    ],
-  },
+  { label: "Hướng dẫn", to: "/guide" },
   { label: "Liên hệ", to: "/contact" },
 ];
 

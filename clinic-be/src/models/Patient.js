@@ -21,7 +21,7 @@ const Patient = sequelize.define('Patient', {
     type: DataTypes.STRING(150), 
     allowNull: false 
   },
-  dod: { 
+  dob: { 
     type: DataTypes.DATEONLY, 
     allowNull: true 
   },

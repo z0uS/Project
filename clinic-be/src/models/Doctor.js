@@ -10,6 +10,9 @@ const Doctor = sequelize.define('Doctor', {
   degree: { type: DataTypes.STRING },
   experience: { type: DataTypes.STRING },
   bio: { type: DataTypes.TEXT },
-  phone: { type: DataTypes.STRING }
+  phone: { type: DataTypes.STRING },
+  dob: { type: DataTypes.DATEONLY, allowNull: true },
+  gender: { type: DataTypes.STRING(10), allowNull: true },
+  address: { type: DataTypes.STRING(255), allowNull: true }
 }, { timestamps: true });
 module.exports = Doctor;

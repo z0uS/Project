@@ -11,7 +11,7 @@ exports.getAllDoctors = async (req, res) => {
       include: [
         {
           model: Doctor, as: 'profile',
-          attributes: ['fullName', 'degree', 'experience', 'bio', 'specialtyId'],
+          attributes: ['fullName', 'degree', 'experience', 'bio', 'specialtyId', 'phone', 'dob', 'gender', 'address'],
           include: [
             { model: Specialty, as: 'specialty', attributes: ['id', 'name'] }
           ]
@@ -27,6 +27,10 @@ exports.getAllDoctors = async (req, res) => {
       bio: d.profile?.bio || "",
       specialtyId: d.profile?.specialtyId || null,
       specialtyName: d.profile?.specialty?.name || "",
+      phone: d.profile?.phone || "",
+      dob: d.profile?.dob || "",
+      gender: d.profile?.gender || "",
+      address: d.profile?.address || "",
       isActive: d.isActive
     }));
     res.json(data);
@@ -40,7 +44,7 @@ exports.getAllDoctors = async (req, res) => {
 // Tạo bác sĩ mới
 exports.createDoctor = async (req, res) => {
   try {
-    const { fullName, email, password, specialtyId, degree, experience, bio } = req.body;
+    const { fullName, email, password, specialtyId, degree, experience, bio, phone, dob, gender, address } = req.body;
     const existed = await User.findOne({ where: { email } });
     if (existed) return res.status(400).json({ message: 'Email đã tồn tại' });
 
@@ -61,6 +65,10 @@ exports.createDoctor = async (req, res) => {
       degree,
       experience,
       bio,
+      phone,
+      dob: dob || null,
+      gender,
+      address,
     });
 
 
@@ -73,7 +81,7 @@ exports.createDoctor = async (req, res) => {
 exports.updateDoctor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullName, email, password, specialtyId, degree, experience, bio } = req.body;
+    const { fullName, email, password, specialtyId, degree, experience, bio, phone, dob, gender, address } = req.body;
     const user = await User.findOne({ where: { id, role: 'doctor' } });
     if (!user) return res.status(404).json({ message: 'Không tìm thấy bác sĩ' });
 
@@ -89,6 +97,10 @@ exports.updateDoctor = async (req, res) => {
       if (degree !== undefined) profile.degree = degree;
       if (experience !== undefined) profile.experience = experience;
       if (bio !== undefined) profile.bio = bio;
+      if (phone !== undefined) profile.phone = phone;
+      if (dob !== undefined) profile.dob = dob || null;
+      if (gender !== undefined) profile.gender = gender;
+      if (address !== undefined) profile.address = address;
       await profile.save();
     }
     res.json({ message: "Cập nhật bác sĩ thành công!" });
@@ -168,8 +180,10 @@ exports.getAllPatients = async (req, res) => {
     const data = patients.map(p => ({
       id: p.id,
       fullName: p.fullName,
-      email: p.email,           // Email trên hồ sơ bệnh nhân
-      phone: p.phoneNumber,     // Số điện thoại trên hồ sơ bệnh nhân
+      email: p.email,
+      phone: p.phone,
+      dateOfBirth: p.dob,
+      address: p.address,
       isActive: p.user?.isActive ?? false
     }));
     res.json(data);
@@ -196,15 +210,17 @@ exports.togglePatientStatus = async (req, res) => {
 // Sửa thông tin hồ sơ bệnh nhân (sửa bảng Patient)
 exports.updatePatient = async (req, res) => {
   try {
-    const { fullName, email, phone } = req.body;
+    const { fullName, email, phone, dateOfBirth, address } = req.body;
     const patient = await Patient.findByPk(req.params.id, {
       include: [{ model: User, as: 'user' }]
     });
     if (!patient) return res.status(404).json({ message: 'Không tìm thấy bệnh nhân' });
 
-    patient.fullName = fullName || patient.fullName;
-    patient.email = email || patient.email;
-    patient.phoneNumber = phone || patient.phoneNumber;
+    if (fullName) patient.fullName = fullName;
+    if (email) patient.email = email;
+    if (phone !== undefined) patient.phone = phone;
+    if (dateOfBirth !== undefined) patient.dob = dateOfBirth || null;
+    if (address !== undefined) patient.address = address;
     await patient.save();
 
     // Nếu muốn cho sửa luôn email đăng nhập, bỏ comment dòng sau (chỉ nên cho sửa nếu có xác thực lại)
@@ -236,4 +252,34 @@ exports.deletePatient = async (req, res) => {
   }
 };
 
+// Tạo bệnh nhân mới
+exports.createPatient = async (req, res) => {
+  try {
+    const { fullName, email, phone, dateOfBirth, address } = req.body;
+    
+    // Kiểm tra email trong bảng User
+    const existedUser = await User.findOne({ where: { email } });
+    if (existedUser) return res.status(400).json({ message: 'Email đã tồn tại' });
 
+    const hashedPass = await bcrypt.hash('123456', 10); // Mật khẩu mặc định
+    const newUser = await User.create({
+      fullName,
+      email,
+      password: hashedPass,
+      role: 'patient'
+    });
+
+    await Patient.create({
+      userId: newUser.id,
+      fullName,
+      email,
+      phone,
+      dob: dateOfBirth || null,
+      address
+    });
+
+    res.status(201).json({ message: 'Tạo bệnh nhân thành công' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi tạo bệnh nhân', error: err.message });
+  }
+};

@@ -17,6 +17,7 @@ const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [confirmMsg, setConfirmMsg] = useState("");
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -49,6 +50,22 @@ const DoctorAppointments = () => {
     fetchAppointments();
   }, [doctor]);
 
+  const handleConfirm = async (appointmentId) => {
+    try {
+      await axios.patch(`/appointments/${appointmentId}/status`, { status: "confirmed" });
+      setAppointments((prev) =>
+        prev.map((app) =>
+          app.id === appointmentId ? { ...app, status: "confirmed" } : app
+        )
+      );
+      setConfirmMsg("Xác nhận lịch hẹn thành công!");
+      setTimeout(() => setConfirmMsg(""), 3000);
+    } catch (err) {
+      setConfirmMsg(err?.response?.data?.message || "Lỗi khi xác nhận lịch hẹn!");
+      setTimeout(() => setConfirmMsg(""), 3000);
+    }
+  };
+
   if (loading) return <div className="text-center pt-32 text-lg text-blue-600">Đang tải lịch hẹn...</div>;
   if (error) return <div className="text-center pt-32 text-red-600">{error}</div>;
 
@@ -58,6 +75,11 @@ const DoctorAppointments = () => {
         <h2 className="text-2xl font-bold mb-6 text-blue-900 text-center tracking-wide drop-shadow">
           Lịch hẹn của tôi
         </h2>
+        {confirmMsg && (
+          <div className={`mb-4 px-4 py-2 rounded text-sm font-semibold text-center ${confirmMsg.includes("thành công") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+            {confirmMsg}
+          </div>
+        )}
         {appointments.length === 0 ? (
           <p className="text-gray-600 text-center py-8">Không có lịch hẹn nào.</p>
         ) : (
@@ -87,6 +109,14 @@ const DoctorAppointments = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {app.status === "pending" && (
+                      <button
+                        onClick={() => handleConfirm(app.id)}
+                        className="text-white bg-green-600 hover:bg-green-700 rounded px-4 py-2 text-sm shadow transition font-semibold"
+                      >
+                        ✔ Xác nhận
+                      </button>
+                    )}
                     <Link
                       to={`/doctor/appointments/${app.id}`}
                       className="text-white bg-blue-600 hover:bg-blue-700 rounded px-4 py-2 text-sm shadow transition"

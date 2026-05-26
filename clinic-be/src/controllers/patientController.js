@@ -1,4 +1,4 @@
-const { Patient } = require('../models'); // Đảm bảo import đúng
+const { Patient, User } = require('../models'); // Đảm bảo import đúng
 
 exports.updateProfile = async (req, res) => {
   try {
@@ -41,9 +41,11 @@ exports.getProfile = async (req, res) => {
     if (!patient) {
       return res.status(404).json({ message: 'Không tìm thấy bệnh nhân' });
     }
+    const user = await User.findByPk(userId, { attributes: ['email'] });
     res.json({
       id: patient.id,
       fullName: patient.fullName,
+      email: user ? user.email : '',
       phone: patient.phone,
       gender: patient.gender,
       dob: patient.dob,

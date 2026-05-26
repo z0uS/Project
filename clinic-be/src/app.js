@@ -88,8 +88,65 @@ sequelize.authenticate()
   });
  
 sequelize.sync({ alter: true })
-  .then(() => {
+  .then(async () => {
     console.log('✅ All models were synchronized successfully.');
+    
+    // Tự động kiểm tra và sửa/seeding dữ liệu mặc định bị lỗi font hoặc thiếu
+    try {
+      const { Shift, Specialty } = require('./models');
+
+      // 1. Kiểm tra / Seeding ca khám (Shifts)
+      const shiftCount = await Shift.count();
+      if (shiftCount === 0) {
+        await Shift.bulkCreate([
+          { id: 1, name: 'Sáng', startTime: '08:00:00', endTime: '12:00:00' },
+          { id: 2, name: 'Chiều', startTime: '13:30:00', endTime: '17:30:00' }
+        ]);
+        console.log('🌱 Seeded default shifts.');
+      } else {
+        // Tự động sửa lại nếu bị lỗi font do import sai encoding
+        const morning = await Shift.findByPk(1);
+        if (morning && morning.name !== 'Sáng') {
+          morning.name = 'Sáng';
+          await morning.save();
+        }
+        const afternoon = await Shift.findByPk(2);
+        if (afternoon && afternoon.name !== 'Chiều') {
+          afternoon.name = 'Chiều';
+          await afternoon.save();
+        }
+      }
+
+      // 2. Kiểm tra / Seeding chuyên khoa (Specialties)
+      const specCount = await Specialty.count();
+      if (specCount === 0) {
+        await Specialty.bulkCreate([
+          { id: 1, name: 'Nội khoa', description: 'Khám và điều trị các bệnh nội khoa tổng quát' },
+          { id: 2, name: 'Ngoại khoa', description: 'Khám và điều trị các bệnh ngoại khoa' },
+          { id: 3, name: 'Nhi khoa', description: 'Khám và điều trị cho trẻ em' }
+        ]);
+        console.log('🌱 Seeded default specialties.');
+      } else {
+        // Tự động sửa lại nếu bị lỗi font do import sai encoding
+        const sp1 = await Specialty.findByPk(1);
+        if (sp1 && sp1.name !== 'Nội khoa') {
+          sp1.name = 'Nội khoa';
+          await sp1.save();
+        }
+        const sp2 = await Specialty.findByPk(2);
+        if (sp2 && sp2.name !== 'Ngoại khoa') {
+          sp2.name = 'Ngoại khoa';
+          await sp2.save();
+        }
+        const sp3 = await Specialty.findByPk(3);
+        if (sp3 && sp3.name !== 'Nhi khoa') {
+          sp3.name = 'Nhi khoa';
+          await sp3.save();
+        }
+      }
+    } catch (seedErr) {
+      console.error('⚠️ Error checking/seeding database default records:', seedErr);
+    }
   })
   .catch((err) => {
     console.error('❌ Model synchronization error:', err);

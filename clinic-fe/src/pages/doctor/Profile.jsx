@@ -11,6 +11,9 @@ const Profile = () => {
     experience: "",
     bio: "",
     specialtyId: "",
+    dob: "",
+    gender: "",
+    address: "",
   });
   const [specialties, setSpecialties] = useState([]);
   const [message, setMessage] = useState("");
@@ -34,6 +37,9 @@ const Profile = () => {
           experience: res.data.experience || "",
           bio: res.data.bio || "",
           specialtyId: res.data.specialtyId ? String(res.data.specialtyId) : "",
+          dob: res.data.dob || "",
+          gender: res.data.gender || "",
+          address: res.data.address || "",
         });
       })
       .catch(() => setMessage("Không lấy được thông tin profile."));
@@ -113,6 +119,30 @@ const Profile = () => {
               />
             </div>
             <div>
+              <label className="block font-medium text-gray-700 mb-1">Ngày sinh</label>
+              <input
+                type="date"
+                name="dob"
+                value={profile.dob}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">Giới tính</label>
+              <select
+                name="gender"
+                value={profile.gender}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Chọn giới tính</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
+            </div>
+            <div>
               <label className="block font-medium text-gray-700 mb-1">Bằng cấp</label>
               <input
                 type="text"
@@ -154,6 +184,17 @@ const Profile = () => {
                 value={profile.experience}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">Địa chỉ</label>
+              <input
+                type="text"
+                name="address"
+                value={profile.address}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="Địa chỉ nơi ở"
               />
             </div>
             <div>

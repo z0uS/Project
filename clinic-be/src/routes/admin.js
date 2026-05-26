@@ -14,6 +14,8 @@ router.get('/dashboard-stats', authMiddleware, roleMiddleware('admin'), adminCon
 //router.get('/patients', authMiddleware, roleMiddleware('admin'), adminController.getAllPatients);
 // Quản lý bệnh nhân
 router.get('/patients', authMiddleware, roleMiddleware('admin'), adminController.getAllPatients);
+// Tạo mới bệnh nhân
+router.post('/patients', authMiddleware, roleMiddleware('admin'), adminController.createPatient);
 // Vô hiệu hóa/kích hoạt lại tài khoản bệnh nhân
 router.patch('/patients/:id/toggle-status', authMiddleware, roleMiddleware('admin'), adminController.togglePatientStatus);
 // Sửa thông tin bệnh nhân
